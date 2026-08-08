@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-container">
+    <h2>Create Account</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div style="color: red; margin-bottom: 10px;">{{ messages[0] }}</div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <input type="text" name="username" placeholder="Choose a Username" required>
+        <input type="password" name="password" placeholder="Choose a Password" required>
+        <button type="submit">Register</button>
+    </form>
+
+    <p style="margin-top: 15px;">
+        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+    </p>
+</div>
+{% endblock %}

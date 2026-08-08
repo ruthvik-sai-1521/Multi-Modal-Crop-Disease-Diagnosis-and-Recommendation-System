@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 40px auto; text-align: center;">
+    <div style="background: var(--light); padding: 30px; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+        👨‍🌾
+    </div>
+    
+    <h2 style="margin-top: 20px;">Welcome, {{ user.username }}!</h2>
+    <p style="color: #666;">Nutri AI Member</p>
+    
+    <div style="text-align: left; margin-top: 40px; padding: 20px; border-top: 1px solid #eee;">
+        <h3>Your Account Details</h3>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Role:</strong> Farmer / Student Researcher</p>
+        <p><strong>Project:</strong> Nutri AI Disease Detection System</p>
+    </div>
+
+    <a href="{{ url_for('logout') }}">
+        <button style="background: #e74c3c; margin-top: 20px;">Logout</button>
+    </a>
+</div>
+{% endblock %}

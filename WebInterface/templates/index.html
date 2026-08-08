@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard">
+    <div class="card">
+        <h3>1. Image Input</h3>
+        <div class="toggle-btns">
+            <button onclick="useFile()" id="btn-file">📁 Upload File</button>
+            <button onclick="useCamera()" id="btn-cam">📷 Use Camera</button>
+        </div>
+        
+        <div id="file-section" style="margin-top: 15px;">
+            <input type="file" id="fileInput" accept="image/*" onchange="previewFile()">
+            <img id="file-preview" style="max-width: 100%; display: none; margin-top: 10px; border-radius: 8px;">
+        </div>
+
+        <div id="camera-section" class="camera-box" style="display: none; margin-top: 15px;">
+            <video id="video" autoplay></video>
+            <button onclick="capture()" style="width: 100%; margin-top: 5px;">Capture Photo</button>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <img id="cam-preview" style="display: none;">
+        </div>
+
+        <h3>2. Environmental Conditions</h3>
+        <div class="env-inputs">
+            <div><label>Temp (°C)</label><input type="number" id="temp" value="26"></div>
+            <div><label>Humidity (%)</label><input type="number" id="humidity" value="70"></div>
+            <div><label>Rainfall (mm)</label><input type="number" id="rain" value="120"></div>
+            <div><label>Soil pH</label><input type="number" id="ph" value="6.5"></div>
+        </div>
+
+        <button onclick="predictDisease()" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 1.2rem;">🔍 PREDICT DISEASE</button>
+    </div>
+
+    <div class="card">
+        <h3>3. Diagnostic Results</h3>
+        <div id="loader" style="display: none;">⏳ Analyzing...</div>
+        
+        <div id="result-area" style="display: none;">
+            <div class="result-box">
+                <h2 id="disease-name" style="margin: 0; color: var(--dark);">Detected: None</h2>
+                <p id="confidence">Confidence: 0%</p>
+            </div>
+
+            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="getAI('explain')">🤖 Explain Disease</button>
+                <button onclick="getAI('remedy')" style="background: #e67e22;">💊 Natural Remedies</button>
+            </div>
+
+            <h4>AI Explanation:</h4>
+            <div id="ai-explain-box" class="ai-output">Click button to generate...</div>
+
+            <h4>Recommended Fertilizers:</h4>
+            <div id="ai-remedy-box" class="ai-output">Click button to generate...</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

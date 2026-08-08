@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 40px auto; text-align: center;">
+    <h1>About Nutri AI</h1>
+    <p style="font-size: 1.1rem; line-height: 1.6; color: #555;">
+        Nutri AI is an advanced agricultural diagnostic tool designed to help farmers 
+        detect crop diseases early and accurately.
+    </p>
+
+    <div style="margin: 30px 0; text-align: left;">
+        <h3>🚀 How it Works</h3>
+        <ul>
+            <li><strong>Deep Learning:</strong> Uses an Ensemble of EfficientNet, DenseNet, and Swin Transformer.</li>
+            <li><strong>Generative AI:</strong> Integrates Google Gemini to explain diseases in simple terms.</li>
+            <li><strong>Offline Mode:</strong> Provides expert advice even without internet connectivity.</li>
+        </ul>
+    </div>
+
+    <p><strong>Developed as a Final Year Project by [Your Name]</strong></p>
+    <a href="{{ url_for('home') }}"><button>Go Back Home</button></a>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+Project Workflow & Team Division for NutriAI
+Stage 1: Data Preparation & Preprocessing (Person A)
+
+Tasks:
+
+Collect and clean datasets of diseased crop leaves (you already have this prepared—now refine).
+
+Perform data augmentation (rotation, flips, lighting variations, noise) to handle imbalanced classes.
+
+Organize dataset into train/val/test splits (stratified).
+
+Extract and normalize climatic/environmental data (soil pH, temperature, humidity, rainfall, etc.).
+
+Create multi-modal input format → each sample = {image + climate vector}.
+
+Tools: Python, OpenCV, Albumentations, Pandas, NumPy.
+
+Output: Clean, balanced, multi-modal dataset ready for training.
+
+Stage 2: Core Model Development (Person B)
+
+Tasks:
+
+Train EfficientNet-B5 and DenseNet201 individually for image-based crop disease detection.
+
+Implement Swin Transformer for global + local pattern recognition.
+
+Apply transfer learning (pretrained on ImageNet, fine-tune on your dataset).
+
+Track experiments (TensorBoard / Weights & Biases).
+
+Evaluate each model using metrics: Accuracy, Precision, Recall, F1-score.
+
+Store best checkpoints.
+
+Output: Trained base models (CNNs + Transformer) with evaluation reports.
+
+Stage 3: Ensemble & Multi-Modal Fusion (Person C)
+
+Tasks:
+
+Implement stacking ensemble (meta-learner like Logistic Regression/XGBoost on model outputs).
+
+Fuse image + climate/soil data (concatenate CNN/Transformer embeddings with environmental feature vectors).
+
+Experiment with early fusion (merge before classification layer) vs. late fusion (combine decision scores).
+
+Optimize ensemble hyperparameters for maximum accuracy & robustness.
+
+Evaluate final ensemble with cross-validation.
+
+Output: Final multi-modal ensemble model for disease detection.
+
+Stage 4: Explainable AI & Recommendation System (Person D)
+
+Tasks:
+
+Integrate SHAP & Integrated Gradients for feature-level explanations (which environmental factor influenced result).
+
+Implement Grad-CAM++ & Attention Maps to show key leaf regions responsible for predictions.
+
+Build rule-based recommendation engine for organic fertilizers & treatments (mapping diseases → natural remedies).
+
+Develop explainability dashboard:
+
+Image → prediction → highlighted regions.
+
+Textual explanation: “This disease occurs due to high humidity + nutrient deficiency.”
+
+Suggested solution: “Apply Neem oil + maintain soil pH between 6–7.”
+
+Output: Explainable disease diagnosis system with natural fertilizer recommendations.
+
+Integration & Collaboration Flow
+
+Person A delivers dataset → used by Person B & C.
+
+Person B outputs trained models → passed to Person C for ensemble fusion.
+
+Person C provides final predictive model → given to Person D for explainability + recommendation integration.
+
+Weekly sync-up to review outputs & issues.
+
+Project Timeline (Suggested 12 Weeks)
+
+Week 1–2: Data collection, preprocessing, augmentation (Person A).
+
+Week 2–6: Base model training (Person B).
+
+Week 5–8: Ensemble + fusion (Person C).
+
+Week 7–10: Explainability + treatment recommendation (Person D).
+
+Week 10–12: Integration, testing, UI/demo preparation, documentation.

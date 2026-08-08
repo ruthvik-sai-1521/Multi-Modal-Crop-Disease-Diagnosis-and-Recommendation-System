@@ -1,0 +1,13 @@
+google-generativeai>=0.7.0
+flask
+flask-sqlalchemy
+flask-login
+torch
+torchvision
+pillow
+numpy
+pandas
+scikit-learn
+joblib
+requests
+opencv-python
