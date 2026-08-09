@@ -98,15 +98,35 @@ def load_vision_model(name):
         print(f"[WARNING] Model {name} error: {e}")
         return None
 
-effnet = load_vision_model('efficientnet')
-densenet = load_vision_model('densenet')
-swin = load_vision_model('swin')
+# Memory optimization for 512MB RAM cloud environments (Render/Koyeb)
+torch.set_num_threads(1)
 
-try:
-    meta_learner = joblib.load("models/meta_learner_final.pkl")
-    scaler = joblib.load("models/env_scaler_final.pkl")
-except:
-    meta_learner = scaler = None
+# Model globals (Loaded lazily on demand)
+effnet = None
+densenet = None
+swin = None
+meta_learner = None
+scaler = None
+models_loaded = False
+
+def ensure_models_loaded():
+    global effnet, densenet, swin, meta_learner, scaler, models_loaded
+    if models_loaded:
+        return
+    
+    print("[INFO] Lazily loading vision models into memory...")
+    effnet = load_vision_model('efficientnet')
+    densenet = load_vision_model('densenet')
+    swin = load_vision_model('swin')
+
+    try:
+        meta_learner = joblib.load("models/meta_learner_final.pkl")
+        scaler = joblib.load("models/env_scaler_final.pkl")
+    except Exception as e:
+        print(f"[WARNING] Meta learner / scaler error: {e}")
+        meta_learner = scaler = None
+    
+    models_loaded = True
 
 # ==========================================
 # 4. INTELLIGENT AI FUNCTIONS (WITH CACHING)
@@ -156,6 +176,7 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    ensure_models_loaded()
     file = request.files.get('file')
     if not file: return jsonify({'error': 'No file'})
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
