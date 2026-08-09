@@ -13,12 +13,18 @@ from torchvision import models, transforms
 from PIL import Image
 from google.api_core import exceptions
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 # ==========================================
 # 1. CONFIGURATION & DATABASE
 # ==========================================
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secrets.token_hex(16)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(16))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
@@ -43,17 +49,18 @@ class AICache(db.Model):
 # 2. AI CONFIGURATION (UPDATED FOR 2025)
 # ==========================================
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-GOOGLE_API_KEY = "AIzaSyAIDeLP1O-JekhBHIyKIXGl2qs4cxVrhhc"
-genai.configure(api_key=GOOGLE_API_KEY)
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "AIzaSyAIDeLP1O-JekhBHIyKIXGl2qs4cxVrhhc")
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
 
 # Use the specific string that worked in your list_models debug
 MODEL_NAME = 'models/gemini-3-flash-preview' 
 
 try:
     ai_model = genai.GenerativeModel(MODEL_NAME)
-    print(f"✅ AI Model {MODEL_NAME} initialized.")
+    print(f"[OK] AI Model {MODEL_NAME} initialized.")
 except Exception as e:
-    print(f"⚠️ Model initialization failed: {e}")
+    print(f"[WARNING] Model initialization failed: {e}")
     ai_model = None
 
 CLASS_NAMES = [
@@ -88,7 +95,7 @@ def load_vision_model(name):
             m.head = nn.Identity()
         return m.to(DEVICE).eval()
     except Exception as e:
-        print(f"⚠️ Model {name} error: {e}")
+        print(f"[WARNING] Model {name} error: {e}")
         return None
 
 effnet = load_vision_model('efficientnet')
@@ -119,7 +126,7 @@ def get_offline_backup(disease_name, mode):
     return f"**Offline Cache:**\n{match[mode]}"
 
 def call_gemini(prompt, disease_name, mode):
-    print(f"🤖 Requesting Gemini: {disease_name}")
+    print(f"[AI] Requesting Gemini: {disease_name}")
     if not ai_model: return get_offline_backup(disease_name, mode)
     
     try:
@@ -127,9 +134,9 @@ def call_gemini(prompt, disease_name, mode):
         if response.text:
             return response.text.replace('**', '').replace('*', '-')
     except exceptions.ResourceExhausted:
-        print("❌ Quota full.")
+        print("[ERROR] Quota full.")
     except Exception as e:
-        print(f"❌ AI Error: {e}")
+        print(f"[ERROR] AI Error: {e}")
     
     return get_offline_backup(disease_name, mode)
 
@@ -188,7 +195,7 @@ def explain_remedy():
     # STEP 1: Check Database Cache
     cached = AICache.query.filter_by(disease=disease, mode=mode).first()
     if cached:
-        print("📦 Serving from local cache.")
+        print("[CACHE] Serving from local cache.")
         return jsonify({'response': cached.response_text})
 
     # STEP 2: Prepare Prompt
@@ -244,7 +251,10 @@ def profile(): return render_template('profile.html', user=current_user)
 @app.route('/about')
 def about(): return render_template('about.html')
 
+with app.app_context():
+    db.create_all()  # Ensure database tables are created on WSGI startup
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all() # This creates the new AICache table
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() in ['true', '1']
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)
